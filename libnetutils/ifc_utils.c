@@ -39,6 +39,10 @@
 
 #include "netutils/ifc.h"
 
+#ifdef MTK_HARDWARE
+#include <linux/un.h>
+#endif
+
 #ifdef ANDROID
 #define LOG_TAG "NetUtils"
 #include <cutils/log.h>
@@ -53,6 +57,10 @@
 #ifdef HAVE_ANDROID_OS
 /* SIOCKILLADDR is an Android extension. */
 #define SIOCKILLADDR 0x8939
+#endif
+
+#ifdef MTK_HARDWARE
+#define SIOCKILLSOCK 0x893a
 #endif
 
 static int ifc_ctl_sock = -1;
