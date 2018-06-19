@@ -207,10 +207,10 @@ bool BatteryMonitor::update(void) {
     props.batteryLevel = mBatteryFixedCapacity ?
         mBatteryFixedCapacity :
         getIntField(mHealthdConfig->batteryCapacityPath);
-#ifndef MTK_HARDWARE
-    props.batteryVoltage = getIntField(mHealthdConfig->batteryVoltagePath) / 1000;
-#else
+#ifdef MTK_HARDWARE
     props.batteryVoltage = getIntField(mHealthdConfig->batteryVoltagePath);
+#else
+    props.batteryVoltage = getIntField(mHealthdConfig->batteryVoltagePath) / 1000;
 #endif
     props.batteryTemperature = mBatteryFixedTemperature ?
         mBatteryFixedTemperature :
@@ -248,7 +248,11 @@ bool BatteryMonitor::update(void) {
         props.dockBatteryLevel = mBatteryFixedCapacity ?
             mBatteryFixedCapacity :
             getIntField(mHealthdConfig->dockBatteryCapacityPath);
-        props.dockBatteryVoltage = getIntField(mHealthdConfig->dockBatteryVoltagePath) / 1000;
+        #ifdef MTK_HARDWARE
+           props.dockBatteryVoltage = getIntField(mHealthdConfig->dockBatteryVoltagePath);
+        #else
+           props.dockBatteryVoltage = getIntField(mHealthdConfig->dockBatteryVoltagePath) / 1000;
+        #endif
 
         props.dockBatteryTemperature = mBatteryFixedTemperature ?
             mBatteryFixedTemperature :
@@ -351,7 +355,11 @@ bool BatteryMonitor::update(void) {
                 int c = getIntField(mHealthdConfig->batteryCurrentNowPath);
                 char b[20];
 
+#ifdef MTK_HARDWARE
+				snprintf(b, sizeof(b), " c=%d", c);
+#else
                 snprintf(b, sizeof(b), " c=%d", c / 1000);
+#endif  
                 strlcat(dmesgline, b, sizeof(dmesgline));
             }
         } else {
@@ -371,8 +379,11 @@ bool BatteryMonitor::update(void) {
             if (!mHealthdConfig->dockBatteryCurrentNowPath.isEmpty()) {
                 int c = getIntField(mHealthdConfig->dockBatteryCurrentNowPath);
                 char b[20];
-
+#ifdef MTK_HARDWARE
+				snprintf(b, sizeof(b), " c=%d", c );
+#else
                 snprintf(b, sizeof(b), " c=%d", c / 1000);
+#endif 
                 strlcat(dmesglinedock, b, sizeof(dmesglinedock));
             }
         } else {
